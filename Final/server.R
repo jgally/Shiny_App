@@ -46,6 +46,9 @@ function(input, output, session){
     if("Job Satisfaction" %in% input$num_var){
       focus <- paste0("Job.Satisfaction")
     }
+    if("Tenure" %in% input$num_var){
+      focus <- paste0("Tenure")
+    }
     if("Intent to Quit" %in% input$num_var){
       focus <- paste0("Intention.to.Quit")
     }

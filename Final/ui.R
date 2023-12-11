@@ -67,7 +67,10 @@ shinyUI(fluidPage(
       tabItem("about",
               box(
                 title = "Information about the Dataset",
-                width = 12
+                width = 12,
+                paste0("The purpose of this app is to allow users to go through the process of analyzing valuable business data."),
+                br(),
+                paste0("The data in this app showcases internal employee data from the fictional 'abc' company. ")
               )
               ),
       tabItem("data",

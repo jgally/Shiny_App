@@ -6,6 +6,7 @@
 library(shiny)
 library(shinydashboard)  
 library(tidyverse)  
+library(ggplot2)
 #
 #
 #reading in data file  
@@ -67,10 +68,7 @@ shinyUI(fluidPage(
       tabItem("about",
               box(
                 title = "Information about the Dataset",
-                width = 12,
-                paste0("The purpose of this app is to allow users to go through the process of analyzing valuable business data."),
-                br(),
-                paste0("The data in this app showcases internal employee data from the fictional 'abc' company. ")
+                width = 12
               )
               ),
       tabItem("data",
@@ -143,27 +141,34 @@ shinyUI(fluidPage(
                   status = "info",
                   solidHeader = TRUE,
                   "Below you can choose how you would like to explore graphical summaries for the data. Variables have been set to their factoral values for meaningful axis labels.",
+                  #Allowing the user to pick the graph type  
                   radioButtons("graph", "Pick a Graph Type",
-                               choices = c("Jitter", "Barplot", "Density", "Count"),
+                               choices = c("Jitter", "Column Plot", "Density", "Count"),
                                selected = "Jitter"),
+                  #User can pick the variable for the x axis here
                   selectizeInput("x", "Pick the X-Axis Variable",
                                  choices = c("Evaluation", "Salary", "Job Satisfaction", "Job Role", "Gender", "Ethnicity", "Tenure", "Age")),
+                  #User can pick the variable for the y axis here
                   selectizeInput("y", "Pick the Y-Axis Variable", 
                                  choices = c("Intent to Quit", "Job Satisfaction", "Salary", "Evaluation")),
+                  #Awkward wording, but here is where the user can choose if they want to see a multivariate relationship
                   radioButtons("more", "Would you like to graph by a third variable?",
                                choices = c("Yes", "No"),
                                selected = "No"),
+                  #Options for how to visualize the multivariate relationship
                   conditionalPanel(condition = "input.more != 'No'",
                                    wellPanel(
                                      radioButtons("how_third", "How would you like to show the third variable?",
                                                   choices = c("Color", "Side-by-side Graphing", "Subsetting Data"))
                                    )),
+                  #If the user does not want to subset they have to pick only one variable here
                   conditionalPanel(condition = "input.more != 'No' && input.how_third != 'Subsetting Data'",
                                    wellPanel(
                                      selectizeInput("third_var", "What should be the third variable?",
                                                     choices = c("Ethnicity", "Job Role", "Gender"))
                                      
                                    )),
+                  #Here comes in all the subsetting options that was in the numerical summaries section
                   conditionalPanel(condition = "input.how_third == 'Subsetting Data'",
                                    wellPanel(
                                      checkboxGroupInput("sub_options", "Pick Which Variables to Subset the Data by (Pick one or more)",
@@ -187,16 +192,20 @@ shinyUI(fluidPage(
                                    wellPanel(checkboxGroupInput("sub_roles", "Choose One or More", choices = c("Administrative", "Customer Service", "Coordinator", "Junior Account Manager" = "Jr Acct Mgr", "Senior Account Manager" = "Sr Acct Mgr", "Assistant Branch Manager" = "Asst Branch Mgr", "Branch Manager" = "Branch Mgr", "Executive"))
                                    )
                   ),
+                  #Here is the action button to submit all of the users inputs for graphing. 
+                  actionButton("graph_button", "Graph It!", icon = icon("chart-column"))
                 ),
                 #This box is for the rendering of the plots after the user input
                 box(
                   title = "Graphical Summary",
                   status = "info",
                   solidHeader = TRUE,
-                  "The new selected graph will generate here once the 'Graph It' button is pushed."
+                  "The new selected graph will generate here once the 'Graph It!' button is pushed.",
+                  plotOutput("graph_plot")
                 )
               )
               ),
+      #This is the next tab to tackle  
       tabItem("info",
               box(
                 title = "In Depth Modeling Knowledge",

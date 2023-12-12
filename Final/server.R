@@ -8,6 +8,7 @@ library(shiny)
 library(shinydashboard)  
 library(tidyverse)  
 library(ggplot2)  
+library(Metrics)
 
 #reading in data file  
 raw <- read.csv("abc-insurance-hr-data.csv", header = TRUE, sep = ",")  
@@ -207,5 +208,93 @@ function(input, output, session){
           ylab(yaxis)
       }
     })
+  })
+  
+  #This is the observe event to fit both models at the same time. Like before, most options will be save first before a grand finale function to combine them all.  
+  observeEvent(input$model, {
+    #input$split is just the number doesn't need saving  
+    
+    #This code is somewhat similar to other checkboxGroupInputs before but the formula requires that a + is between each so here the predictors will be saved in a vector and then linked together in a formula afterwards  
+    glm_p <- c()  
+    
+    if("Evaluation" %in% input$glm_predictors){
+      glm_p <- c(glm_p, "Evaluation")
+    } if("Salary" %in% input$glm_predictors){
+      glm_p <- c(glm_p, "Salary.grade")
+    } if("Job Satisfaction" %in% input$glm_predictors){
+      glm_p <- c(glm_p, "Job.Satisfaction")
+    } if("Job Role" %in% input$glm_predictors){
+      glm_p <- c(glm_p, "JobRole")
+    } if("Gender" %in% input$glm_predictors){
+      glm_p <- c(glm_p, "Gender")
+    } if("Ethnicity" %in% input$glm_predictors){
+      glm_p <- c(glm_p, "Ethnicity")
+    } if("Tenure" %in% input$glm_predictors){
+      glm_p <- c(glm_p, "Tenure")
+    } if("Age" %in% input$glm_predictors){
+      glm_p <- c(glm_p, "Age")
+    }
+    
+    #Now that all the possible selections can be added into the glm_p object they can be linked with a + in between  
+    glm_string <- paste(glm_p, collapse = " + ")  
+    
+    #The same process above can be done for the random forest predictors  
+    rf_p <- c()  
+    
+    if("Evaluation" %in% input$rf_predictors){
+      rf_p <- c(rf_p, "Evaluation")
+    } if("Salary" %in% input$rf_predictors){
+      rf_p <- c(rf_p, "Salary.grade")
+    } if("Job Satisfaction" %in% input$rf_predictors){
+      rf_p <- c(rf_p, "Job.Satisfaction")
+    } if("Job Role" %in% input$rf_predictors){
+      rf_p <- c(rf_p, "JobRole")
+    } if("Gender" %in% input$rf_predictors){
+      rf_p <- c(rf_p, "Gender")
+    } if("Ethnicity" %in% input$rf_predictors){
+      rf_p <- c(rf_p, "Ethnicity")
+    } if("Tenure" %in% input$rf_predictors){
+      rf_p <- c(rf_p, "Tenure")
+    } if("Age" %in% input$rf_predictors){
+      rf_p <- c(rf_p, "Age")
+    }
+    
+    #Now that all the possible selections can be added into the glm_p object they can be linked with a + in between  
+    rf_string <- paste(rf_p, collapse = " + ")  
+      
+    
+    #input$tune_grid is just a number, also doesn't need saving  
+    
+    #input$cv is also a number  
+    
+    #Now that all variables have been assigned, time to split the data  
+    #Set seed for reproducibility  
+    set.seed(333)  
+    
+    #Splitting the data  
+    intrain <- createDataPartition(y = fact_data$Intention.to.Quit, p = input$split, list = FALSE)  
+    
+    #Saving the splits  
+    training <-fact_data[intrain,]  
+    testing <-fact_data[-intrain,]  
+    
+    #Setting the trainControl for the glm() this did not have to be an option for the user to alter as per the instructions  
+    glm_ctrl <- trainControl(method = "cv", number = 3, classProbs = TRUE)  
+    
+    #Fitting the glm model  
+    glm_model <-train(Intention.to.Quit ~ glm_string, data = training,
+                      method = "glm",
+                      trControl = glm_ctrl)  
+    
+    #Use predict() on training model so that the rmse can be calculated  
+    training_pred <- predict(glm_model, newdata = training)  
+    
+    #With the Metrics library rmse can easily be calculated  
+    training_rmse <- rmse(training$Intention.to.Quit, training_pred)  
+    #Then the same process is repeated for the testing predictions  
+    testing_pred <- predict(glm_model, newdata = testing)  
+    
+    #Calculating rmse for testing model  
+    testing_rmse <- rmse(testing$Intention.to.Quit, testing_pred)
   })
 }

@@ -6,7 +6,10 @@
 library(shiny)
 library(shinydashboard)  
 library(tidyverse)  
-library(ggplot2)
+library(ggplot2)  
+library(randomForest)  
+library(mathjaxr)  
+library(Metrics)
 #
 #
 #reading in data file  
@@ -222,7 +225,7 @@ shinyUI(fluidPage(
                 "Below you can choose how to model the data.",
                 #User can change the split percentage; I gave a reasonable range for splits  
                 sliderInput("split", "Select the Training/Test Split Percentage",
-                            min = 50, max = 95, value = 70, step = 5),
+                            min = 0.5, max = 0.95, value = 0.7, step = 0.05),
                 #Allowing the user to choose predictors for the glm  
                 checkboxGroupInput("glm_predictors", "Choose predictor(s) to model the glm for Intent to Quit",
                                    choices = c("Age", "Gender", "Tenure", "Ethnicity", "Job Role", "Job Satisfaction", "Salary", "Evaluation"),
@@ -231,6 +234,9 @@ shinyUI(fluidPage(
                 checkboxGroupInput("rf_predictors", "Choose predictor(s) to model the rf for Intent to Quit",
                                    choices = c("Age", "Gender", "Tenure", "Ethnicity", "Job Role", "Job Satisfaction", "Salary", "Evaluation"),
                                    selected = "Age"),
+                #Tuning parameter grid options for the user to choose from  
+                numericInput("tune_grid", "Tune the Random Forest Model (Pick a number that is equal to, or less than the total number of predictors selected)",
+                             value = 1, min = 1, max = 8, step = 1),
                 #User options to changing the CV settings 
                 numericInput("cv", "Change CV Setting",
                              value = 1, min = 1, max= 5, step = 1),

@@ -71,7 +71,9 @@ shinyUI(fluidPage(
       tabItem("about",
               box(
                 title = "Information about the Dataset",
-                width = 12
+                width = 12,
+                paste0(Sage Research Methods Datasets - This collection of practice datasets contains over 120 datasets using data from real research. The collection is designed to support the teaching and learning of data analysis techniques and research methods.
+                      (2013). SAGE research methods. http://srmo.sagepub.com/datasets.)
               )
               ),
       tabItem("data",

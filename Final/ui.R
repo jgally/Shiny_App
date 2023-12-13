@@ -226,13 +226,13 @@ shinyUI(fluidPage(
                 #User can change the split percentage; I gave a reasonable range for splits  
                 sliderInput("split", "Select the Training/Test Split Percentage",
                             min = 0.5, max = 0.95, value = 0.7, step = 0.05),
-                #Allowing the user to choose predictors for the glm  
-                checkboxGroupInput("glm_predictors", "Choose predictor(s) to model the glm for Intent to Quit",
-                                   choices = c("Age", "Gender", "Tenure", "Ethnicity", "Job Role", "Job Satisfaction", "Salary", "Evaluation"),
+                #Allowing the user to choose predictors for the lm  
+                checkboxGroupInput("lm_predictors", "Choose predictor(s) to model the lm for Tenure",
+                                   choices = c("Age", "Gender", "Intent to Quit", "Ethnicity", "Job Role", "Job Satisfaction", "Salary", "Evaluation"),
                                    selected = "Age"),
                 #Allowing the user to choose predictors for the random forest  
-                checkboxGroupInput("rf_predictors", "Choose predictor(s) to model the rf for Intent to Quit",
-                                   choices = c("Age", "Gender", "Tenure", "Ethnicity", "Job Role", "Job Satisfaction", "Salary", "Evaluation"),
+                checkboxGroupInput("rf_predictors", "Choose predictor(s) to model the rf for Tenure",
+                                   choices = c("Age", "Gender", "Intent to Quit", "Ethnicity", "Job Role", "Job Satisfaction", "Salary", "Evaluation"),
                                    selected = "Age"),
                 #Tuning parameter grid options for the user to choose from  
                 numericInput("tune_grid", "Tune the Random Forest Model (Pick a number that is equal to, or less than the total number of predictors selected)",

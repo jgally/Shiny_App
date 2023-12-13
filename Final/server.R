@@ -136,8 +136,6 @@ function(input, output, session){
       xaxis <- paste0("Gender")
     } else if(input$x == "Ethnicity"){
       xaxis <- paste0("Ethnicity")
-    } else if(input$x == "Tenure"){
-      xaxis <- paste0("Tenure")
     } else {
       xaxis <- paste0("Age")
     }
@@ -149,6 +147,8 @@ function(input, output, session){
       yaxis <- paste0("Salary.grade")
     } else if(input$y == "Job Satisfaction"){
       yaxis <- paste0("Job.Satisfaction")
+    } else if(input$y == "Tenure"){
+      yaxis <- paste0("Tenure")
     } else {
       yaxis <- paste0("Intention.to.Quit")
     }
@@ -215,28 +215,28 @@ function(input, output, session){
     #input$split is just the number doesn't need saving  
     
     #This code is somewhat similar to other checkboxGroupInputs before but the formula requires that a + is between each so here the predictors will be saved in a vector and then linked together in a formula afterwards  
-    glm_p <- c()  
+    lm_p <- c()  
     
-    if("Evaluation" %in% input$glm_predictors){
-      glm_p <- c(glm_p, "Evaluation")
-    } if("Salary" %in% input$glm_predictors){
-      glm_p <- c(glm_p, "Salary.grade")
-    } if("Job Satisfaction" %in% input$glm_predictors){
-      glm_p <- c(glm_p, "Job.Satisfaction")
-    } if("Job Role" %in% input$glm_predictors){
-      glm_p <- c(glm_p, "JobRole")
-    } if("Gender" %in% input$glm_predictors){
-      glm_p <- c(glm_p, "Gender")
-    } if("Ethnicity" %in% input$glm_predictors){
-      glm_p <- c(glm_p, "Ethnicity")
-    } if("Tenure" %in% input$glm_predictors){
-      glm_p <- c(glm_p, "Tenure")
-    } if("Age" %in% input$glm_predictors){
-      glm_p <- c(glm_p, "Age")
+    if("Evaluation" %in% input$lm_predictors){
+      lm_p <- c(lm_p, "Evaluation")
+    } if("Salary" %in% input$lm_predictors){
+      lm_p <- c(lm_p, "Salary.grade")
+    } if("Job Satisfaction" %in% input$lm_predictors){
+      lm_p <- c(lm_p, "Job.Satisfaction")
+    } if("Job Role" %in% input$lm_predictors){
+      lm_p <- c(lm_p, "JobRole")
+    } if("Gender" %in% input$lm_predictors){
+      lm_p <- c(lm_p, "Gender")
+    } if("Ethnicity" %in% input$lm_predictors){
+      lm_p <- c(lm_p, "Ethnicity")
+    } if("Intent to Quit" %in% input$lm_predictors){
+      lm_p <- c(lm_p, "Intention.to.Quit")
+    } if("Age" %in% input$lm_predictors){
+      lm_p <- c(lm_p, "Age")
     }
     
     #Now that all the possible selections can be added into the glm_p object they can be linked with a + in between  
-    glm_string <- paste(glm_p, collapse = " + ")  
+    lm_string <- paste(lm_p, collapse = " + ")  
     
     #The same process above can be done for the random forest predictors  
     rf_p <- c()  
@@ -253,8 +253,8 @@ function(input, output, session){
       rf_p <- c(rf_p, "Gender")
     } if("Ethnicity" %in% input$rf_predictors){
       rf_p <- c(rf_p, "Ethnicity")
-    } if("Tenure" %in% input$rf_predictors){
-      rf_p <- c(rf_p, "Tenure")
+    } if("Intent to Quit" %in% input$rf_predictors){
+      rf_p <- c(rf_p, "Intention.to.Quit")
     } if("Age" %in% input$rf_predictors){
       rf_p <- c(rf_p, "Age")
     }
@@ -272,29 +272,33 @@ function(input, output, session){
     set.seed(333)  
     
     #Splitting the data  
-    intrain <- createDataPartition(y = fact_data$Intention.to.Quit, p = input$split, list = FALSE)  
+    intrain <- createDataPartition(y = fact_data$Tenure, p = input$split, list = FALSE)  
     
     #Saving the splits  
     training <-fact_data[intrain,]  
     testing <-fact_data[-intrain,]  
     
     #Setting the trainControl for the glm() this did not have to be an option for the user to alter as per the instructions  
-    glm_ctrl <- trainControl(method = "cv", number = 3, classProbs = TRUE)  
+    lm_ctrl <- trainControl(method = "cv", number = 3, summaryFunction = RMSE)  
     
     #Fitting the glm model  
-    glm_model <-train(Intention.to.Quit ~ glm_string, data = training,
-                      method = "glm",
-                      trControl = glm_ctrl)  
+    lm_model <-train(Tenure ~ lm_string, data = training,
+                      method = "lm",
+                      trControl = lm_ctrl)  
     
     #Use predict() on training model so that the rmse can be calculated  
-    training_pred <- predict(glm_model, newdata = training)  
+    training_pred <- predict(lm_model, newdata = training)  
     
     #With the Metrics library rmse can easily be calculated  
-    training_rmse <- rmse(training$Intention.to.Quit, training_pred)  
+    training_rmse <- rmse(training$Tenure, training_pred)  
+    
     #Then the same process is repeated for the testing predictions  
-    testing_pred <- predict(glm_model, newdata = testing)  
+    testing_pred <- predict(lm_model, newdata = testing)  
     
     #Calculating rmse for testing model  
-    testing_rmse <- rmse(testing$Intention.to.Quit, testing_pred)
+    testing_rmse <- rmse(testing$Tenure, testing_pred)  
+    
+    #Putting results in a table to compare  
+    renderTable()
   })
 }

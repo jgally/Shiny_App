@@ -72,8 +72,12 @@ shinyUI(fluidPage(
               box(
                 title = "Information about the Dataset",
                 width = 12,
-                paste0(Sage Research Methods Datasets - This collection of practice datasets contains over 120 datasets using data from real research. The collection is designed to support the teaching and learning of data analysis techniques and research methods.
-                      (2013). SAGE research methods. http://srmo.sagepub.com/datasets.)
+                paste0("The purpose of this app is to allow users to explore the employment data of the fictional 'abc' company. Overall, the user should be able to examine what factors affect the longevity of employees at the company. Employee retention cannot only save on training expenses and resources, but also foster better company culture and talent"),
+                br(),
+                paste0("The data used in this application comes from the Sage Research Methods Datasets. These datasets are provided for reasearch, teachers, and students alike to utilize while learning data analysis techniques. More information about this dataset and others can be found at the link below."),
+                uiOuput("link"),
+                paste0("This data is the records of a fictional company. Employee attributes such as gender, ethnicity, tenure, performance evaluation, age, employee job satisfaction, job role, and salary are contained within this data set. The original data provides all numeric responses, but is intended to be facotral variables all except for age and tenure.")
+                      
               )
               ),
       tabItem("data",
@@ -216,7 +220,10 @@ shinyUI(fluidPage(
                 title = "In Depth Modeling Knowledge",
                 status = "info",
                 solidHeader = TRUE,
-                width = 12
+                width = 12, 
+                paste0("Linear regression models are a way to conduct predictive analysis. Typically, it is easiest to envision linear regression as the lines typically overlayed on graphs to show general trends. Linear regression models follow a couple of general assumptions. The response variable being modeled must be a continuous response, not a discrete variable such as factoral variables. The statistical errors should assume a normal distribution. Constant variance should also be assumed. If these assumptions are not met then data scientists can used generalized linear regression models to fit their data."),
+                br(),
+                paste0("Random forests are a type of ensemble method of modeling. Random forest take what is known as bootstrapping samples from the data in order to evaluate the relationships between predictor variables and the target variable. A bootstrap sample is a sample of a specific size take from the data and then the data can be replaced into the data. Bootstrapping tends to lead to an out of bag amount of data that has not been sampled once during the process. This can be used as a testing set in some situations. Random forests build multiple trees (could be regression or classification) which should decrease the variance of predictions compared to a single modeling tree. A lower variance is preferred in situations involving prediction as it could mean the predictions will be more accurate. Random forests that are used for predicting a classification variable will take the class majority predicted by all of its sampling. If it is predicting the values for regression the random forest will take the average of the results produced. Random forests are different from other ensemble methods such as bagging because random forests will consider only a subset of the predictor variables when building trees. Bagging methods use all of the predictor variables to evaluate the relationships between the predictors and the focus variable. Subsetting the variables with random forests can increase the bias, but hopefully the decreased variance will balance these pros and cons in order to provide a better model fitting.")
               )
       ),
       tabItem("fitting",
@@ -240,7 +247,7 @@ shinyUI(fluidPage(
                 numericInput("tune_grid", "Tune the Random Forest Model (Pick a number that is equal to, or less than the total number of predictors selected)",
                              value = 1, min = 1, max = 8, step = 1),
                 #User options to changing the CV settings 
-                numericInput("cv", "Change CV Setting",
+                numericInput("alter_cv", "Change CV Setting",
                              value = 1, min = 1, max= 5, step = 1),
                 #Action button to model both at the same time  
                 actionButton("model", "Model It!", icon = icon("code-branch"))

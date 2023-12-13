@@ -51,6 +51,13 @@ fact_data$Job.Satisfaction <- fact_data$Job.Satisfaction %>%
 
 # Define server logic required to draw a histogram
 function(input, output, session){
+  #Here is the link for the About page  
+  url <- a("SAGE research methods", href = "http://srmo.sagepub.com/datasets")  
+  #Output for it  
+  output$link <- renderUI({
+    tagList("URL Link:", url)
+  })
+  
   #Starting with the numeric summaries choices, the action button requires an observeEvent() to make sure it runs only when it is submitted  
   observeEvent(input$num_button, {
     #Saving user selections of which variable to summarize for easy tracking  
@@ -286,26 +293,48 @@ function(input, output, session){
     testing <-fact_data[-intrain,]  
     
     #Setting the trainControl for the glm() this did not have to be an option for the user to alter as per the instructions  
-    lm_ctrl <- trainControl(method = "cv", number = 3, summaryFunction = RMSE)  
+    lm_ctrl <- trainControl(method = "cv", number = 3)  
     
-    #Fitting the glm model  
+    #Fitting the lm model  
     lm_model <-train(Tenure ~ lm_string, data = training,
                       method = "lm",
                       trControl = lm_ctrl)  
     
     #Use predict() on training model so that the rmse can be calculated  
-    training_pred <- predict(lm_model, newdata = training)  
+    training_lmpred <- predict(lm_model, newdata = training)  
     
     #With the Metrics library rmse can easily be calculated  
-    training_rmse <- rmse(training$Tenure, training_pred)  
+    training_lmrmse <- rmse(training$Tenure, training_lmpred)  
     
     #Then the same process is repeated for the testing predictions  
-    testing_pred <- predict(lm_model, newdata = testing)  
+    testing_lmpred <- predict(lm_model, newdata = testing)  
     
     #Calculating rmse for testing model  
-    testing_rmse <- rmse(testing$Tenure, testing_pred)  
+    testing_lmrmse <- rmse(testing$Tenure, testing_lmpred)  
+    
+    
+    #The same process over for the random forest model  
+    rf_ctrl <- trainControl(method = "cv", number = input$alter_cv)  
+    #Fitting the rf model  
+    rf_model <- train(Tenure ~ rf_string, data = training,
+                      method = "rf",
+                      trControl = rf_ctrl,
+                      tuneGrid = expand.grid(mtry = tune_grid))  
+    #Use predict() on training model so that the rmse can be calculated  
+    training_rfpred <- predict(rf_model, newdata = training)  
+    
+    #With the Metrics library rmse can easily be calculated  
+    training_rfrmse <- rmse(training$Tenure, training_rfpred)  
+    
+    #Then the same process is repeated for the testing predictions  
+    testing_rfpred <- predict(rf_model, newdata = testing)  
+    
+    #Calculating rmse for testing model  
+    testing_rfrmse <- rmse(testing$Tenure, testing_rfpred)
     
     #Putting results in a table to compare  
-    renderTable()
+    renderUI(
+      c(lm = testing_lmrmse, rf = testing_rfrmse)
+    )
   })
 }

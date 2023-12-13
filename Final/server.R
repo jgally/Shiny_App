@@ -56,6 +56,13 @@ function(input, output, session){
   #Output for it  
   output$link <- renderUI({
     tagList("URL Link:", url)
+  })  
+  
+  #Here is the function for the picture  
+  output$biz_image <- renderImage({
+    list(src = "Final/biz_image.jpg",
+         alt = "Clip art picture of people working together in a business sense. One man is on a ladder watering a plant that is growing from coins."
+    )
   })
   
   #Starting with the numeric summaries choices, the action button requires an observeEvent() to make sure it runs only when it is submitted  
@@ -333,8 +340,18 @@ function(input, output, session){
     testing_rfrmse <- rmse(testing$Tenure, testing_rfpred)
     
     #Putting results in a table to compare  
-    renderUI(
+    renderUI("comparisons",
       c(lm = testing_lmrmse, rf = testing_rfrmse)
     )
+    
+    #reporting the fit statistics as well  
+    renderUI("fits",
+             #summary of the linear regression model  
+             summary(lm_model),  
+             
+             #tree plot of the random forest  
+             plot(rf_model),
+             text(rf_model)
+             )
   })
 }

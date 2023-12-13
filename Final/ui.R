@@ -72,11 +72,13 @@ shinyUI(fluidPage(
               box(
                 title = "Information about the Dataset",
                 width = 12,
-                paste0("The purpose of this app is to allow users to explore the employment data of the fictional 'abc' company. Overall, the user should be able to examine what factors affect the longevity of employees at the company. Employee retention cannot only save on training expenses and resources, but also foster better company culture and talent"),
-                br(),
-                paste0("The data used in this application comes from the Sage Research Methods Datasets. These datasets are provided for reasearch, teachers, and students alike to utilize while learning data analysis techniques. More information about this dataset and others can be found at the link below."),
-                uiOuput("link"),
-                paste0("This data is the records of a fictional company. Employee attributes such as gender, ethnicity, tenure, performance evaluation, age, employee job satisfaction, job role, and salary are contained within this data set. The original data provides all numeric responses, but is intended to be facotral variables all except for age and tenure.")
+                paste("The purpose of this app is to allow users to explore the employment data of the fictional 'abc' company. Overall, the user should be able to examine what factors affect the longevity of employees at the company. Employee retention cannot only save on training expenses and resources, but also foster better company culture and talent",
+"The data used in this application comes from the Sage Research Methods Datasets. These datasets are provided for reasearch, teachers, and students alike to utilize while learning data analysis techniques. More information about this dataset and others can be found at the link below."),
+                uiOutput("link"),
+                paste("This data is the records of a fictional company. Employee attributes such as gender, ethnicity, tenure, performance evaluation, age, employee job satisfaction, job role, and salary are contained within this data set. The original data provides all numeric responses, but is intended to be facotral variables all except for age and tenure. For example, ethnicity is recorded in responses of 0, 1, 2, 3, 4. These numbers are not supposed to be taken numerically, but to be recognized with factoral levels as 'white', 'black', 'asian', 'latino', and 'other'. Job roles is recorded as 1-7, but the responses correlate to administrative, customer service, coordinator, junior account manager, senior account manager, assistant branch manager, branch manager, and executive; respectively. Gender is recorded as 1 or 2 with 1 meaning female and 2 meaning male. Salary is recording the salary grade of the employee which supplies that a range for which the employee's salary fits into. Salary grade is broken into a scale of 1-5 with 1 being 20 to 40 thousand dollars, 2 is 40 to 60 thousand, 3 is 60 to 80 thousand, 4 is 80 to 100 thousand, and 5 is 100 thousand and more. Job satisfaction, performance evaluation, and intention to quit are all rated on a scale of 1-5. 1 is treated as the lower end of the scale such as 'poor' for evaluation or 'extremely unlikely' for intent to quit. 5 is treated as the higher end of the scale meaning 'exceeded expectations' for evaluation or 'extremely likely' intend to quit. Tenure is the underlying focus of this data examination, not only for its importance within a company, but additionally due to its numeric structure which provides an easier examination of modeling success."
+                       ,"Each tab within this application serves a different purpose for the user. This About tab is meant to explain the idea of the application and the data within it. The Data Exploration tab allows the user to change and choose variables used in numerical and graphical summaries. Data Exploration is important in allowing the user to become familiar with the data and possible relationships between different variables or subsets of the data. The Modeling tab is broken into three smaller tabs. The Modeling Info subtab goes into explaining the two models used within this app: linear regression and random forests. Model Fitting subtab is where the user can select variables and tuning parameters for the models to evaluate the data. Within this tab fit statistics for the models such as root mean square deviation will be compared to determine how well the models are performing.The Prediction subtab should allow the user to use linear regression and random forest modeling to test out specified variable values. Users will be able to select the values and gain predictions for just how long an employee's tenure might be.",
+                       sep = "\n"),
+imageOuput("biz_image")
                       
               )
               ),
@@ -88,7 +90,7 @@ shinyUI(fluidPage(
                   status = "warning",
                   solidHeader = TRUE,
                   width = 12,
-                  paste0("Remember: Variables such as evaluation, salary, job satisfaction, and intent to quit are ratings on a scale of 1 to 5 with 1 being a poorer score and 5 being a great score. See the About tab to determine specific meaning behind these scores.")
+                  paste("Remember: Variables such as evaluation, salary, job satisfaction, and intent to quit are ratings on a scale of 1 to 5 with 1 being a poorer score and 5 being a great score. See the About tab to determine specific meaning behind these scores.")
                 ),
                 #This box to hold all my numeric summary choices
                 box(
@@ -255,7 +257,12 @@ shinyUI(fluidPage(
               box(
                 title = "Model Fit",
                 status = "info",
-                solidHeader = TRUE
+                solidHeader = TRUE,
+                "These are the fit statistics of each model.",
+                #Here is the RMSE  
+                uiOutput("comparisons"),
+                #Here is the summary stats of the lm and the tree plot of the rf  
+                uiOutput("fits")
               )
       ),
       tabItem("predictions",
@@ -263,7 +270,8 @@ shinyUI(fluidPage(
                 title = "Predictions of Company Retention",
                 status = "success",
                 solidHeader = TRUE,
-                width = 12
+                width = 12,
+                "This is where users should have been able to select values for different predictor variables"
               )
               )
     )

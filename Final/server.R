@@ -9,6 +9,7 @@ library(shinydashboard)
 library(tidyverse)  
 library(ggplot2)  
 library(Metrics)
+library(caret)
 
 #reading in data file  
 raw <- read.csv("abc-insurance-hr-data.csv", header = TRUE, sep = ",")  
@@ -19,7 +20,7 @@ num_data <- raw
 #changing variables into meaningful factors  
 num_data$Ethnicity <- num_data$Ethnicity %>% 
   factor(levels = c(0,1,2,3,4),
-         labels = c("White", "Black", "Asian", "Latino", "Other"))  
+         labels = c("White", "Black", "Asian", "Latino", "Other"))
 
 num_data$Gender <- num_data$Gender %>% 
   factor(levels = c(1,2),
@@ -60,7 +61,7 @@ function(input, output, session){
   
   #Here is the function for the picture  
   output$biz_image <- renderImage({
-    list(src = "Final/biz_image.jpg",
+    list(src = "../www/biz_image.jpg",
          alt = "Clip art picture of people working together in a business sense. One man is on a ladder watering a plant that is growing from coins."
     )
   })
@@ -264,19 +265,26 @@ function(input, output, session){
     
     if("Evaluation" %in% input$rf_predictors){
       rf_p <- c(rf_p, "Evaluation")
-    } if("Salary" %in% input$rf_predictors){
+    } 
+    if("Salary" %in% input$rf_predictors){
       rf_p <- c(rf_p, "Salary.grade")
-    } if("Job Satisfaction" %in% input$rf_predictors){
+    } 
+    if("Job Satisfaction" %in% input$rf_predictors){
       rf_p <- c(rf_p, "Job.Satisfaction")
-    } if("Job Role" %in% input$rf_predictors){
+    } 
+    if("Job Role" %in% input$rf_predictors){
       rf_p <- c(rf_p, "JobRole")
-    } if("Gender" %in% input$rf_predictors){
+    } 
+    if("Gender" %in% input$rf_predictors){
       rf_p <- c(rf_p, "Gender")
-    } if("Ethnicity" %in% input$rf_predictors){
+    } 
+    if("Ethnicity" %in% input$rf_predictors){
       rf_p <- c(rf_p, "Ethnicity")
-    } if("Intent to Quit" %in% input$rf_predictors){
+    } 
+    if("Intent to Quit" %in% input$rf_predictors){
       rf_p <- c(rf_p, "Intention.to.Quit")
-    } if("Age" %in% input$rf_predictors){
+    } 
+    if("Age" %in% input$rf_predictors){
       rf_p <- c(rf_p, "Age")
     }
     
@@ -303,7 +311,7 @@ function(input, output, session){
     lm_ctrl <- trainControl(method = "cv", number = 3)  
     
     #Fitting the lm model  
-    lm_model <-train(Tenure ~ lm_string, data = training,
+    lm_model <-train(as.formula(paste0("Tenure ~ ", lm_string)), data = training,
                       method = "lm",
                       trControl = lm_ctrl)  
     
@@ -322,11 +330,16 @@ function(input, output, session){
     
     #The same process over for the random forest model  
     rf_ctrl <- trainControl(method = "cv", number = input$alter_cv)  
+    tg <- expand.grid(mtry = 1:input$tune_grid, splitrule = "gini", min.node.size = 5)
     #Fitting the rf model  
-    rf_model <- train(Tenure ~ rf_string, data = training,
-                      method = "rf",
-                      trControl = rf_ctrl,
-                      tuneGrid = expand.grid(mtry = tune_grid))  
+    #rf_model <- train(as.formula(paste("Tenure ~", rf_string)), data = training,
+                      # method = "ranger",
+                      # trControl = rf_ctrl,
+                      # tuneGrid = tg)
+    #just to get it to run
+    rf_model <- train(as.formula(paste0("Tenure ~ ", rf_string)), data = training,
+          method = "lm",
+          trControl = lm_ctrl)  
     #Use predict() on training model so that the rmse can be calculated  
     training_rfpred <- predict(rf_model, newdata = training)  
     
@@ -340,18 +353,18 @@ function(input, output, session){
     testing_rfrmse <- rmse(testing$Tenure, testing_rfpred)
     
     #Putting results in a table to compare  
-    renderUI("comparisons",
-      c(lm = testing_lmrmse, rf = testing_rfrmse)
-    )
-    
-    #reporting the fit statistics as well  
-    renderUI("fits",
-             #summary of the linear regression model  
-             summary(lm_model),  
-             
-             #tree plot of the random forest  
-             plot(rf_model),
-             text(rf_model)
-             )
+    # renderUI("comparisons",
+    #   c(lm = testing_lmrmse, rf = testing_rfrmse), quoted = TRUE
+    # )
+    # 
+    # #reporting the fit statistics as well  
+    # renderUI("fits",
+    #          #summary of the linear regression model  
+    #          summary(lm_model),  
+    #          
+    #          #tree plot of the random forest  
+    #          plot(rf_model),
+    #          text(rf_model)
+    #          )
   })
 }

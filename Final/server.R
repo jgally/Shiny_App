@@ -117,8 +117,8 @@ function(input, output, session){
       graphing <- geom_jitter()
     } else if(input$graph == "Column Plot"){
       graphing <- geom_col()
-    } else if(input$graph == "Density"){
-      graphing <- geom_density()
+    } else if(input$graph == "Regression"){
+      graphing <- geom_smooth()
     } else {
       graphing <- geom_count()
     }
@@ -219,19 +219,26 @@ function(input, output, session){
     
     if("Evaluation" %in% input$lm_predictors){
       lm_p <- c(lm_p, "Evaluation")
-    } if("Salary" %in% input$lm_predictors){
+    }
+    if("Salary" %in% input$lm_predictors){
       lm_p <- c(lm_p, "Salary.grade")
-    } if("Job Satisfaction" %in% input$lm_predictors){
+    }
+    if("Job Satisfaction" %in% input$lm_predictors){
       lm_p <- c(lm_p, "Job.Satisfaction")
-    } if("Job Role" %in% input$lm_predictors){
+    }
+    if("Job Role" %in% input$lm_predictors){
       lm_p <- c(lm_p, "JobRole")
-    } if("Gender" %in% input$lm_predictors){
+    }
+    if("Gender" %in% input$lm_predictors){
       lm_p <- c(lm_p, "Gender")
-    } if("Ethnicity" %in% input$lm_predictors){
+    }
+    if("Ethnicity" %in% input$lm_predictors){
       lm_p <- c(lm_p, "Ethnicity")
-    } if("Intent to Quit" %in% input$lm_predictors){
+    }
+    if("Intent to Quit" %in% input$lm_predictors){
       lm_p <- c(lm_p, "Intention.to.Quit")
-    } if("Age" %in% input$lm_predictors){
+    }
+    if("Age" %in% input$lm_predictors){
       lm_p <- c(lm_p, "Age")
     }
     

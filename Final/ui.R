@@ -146,7 +146,7 @@ shinyUI(fluidPage(
                   "Below you can choose how you would like to explore graphical summaries for the data. Variables have been set to their factoral values for meaningful axis labels.",
                   #Allowing the user to pick the graph type  
                   radioButtons("graph", "Pick a Graph Type",
-                               choices = c("Jitter", "Column Plot", "Density", "Count"),
+                               choices = c("Jitter", "Column Plot", "Regression", "Count"),
                                selected = "Jitter"),
                   #User can pick the variable for the x axis here
                   selectizeInput("x", "Pick the X-Axis Variable",

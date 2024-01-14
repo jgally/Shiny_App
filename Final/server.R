@@ -62,7 +62,9 @@ function(input, output, session){
   #Here is the function for the picture  
   output$biz_image <- renderImage({
     list(src = "../www/biz_image.jpg",
-         alt = "Clip art picture of people working together in a business sense. One man is on a ladder watering a plant that is growing from coins."
+         alt = "Clip art picture of people working together in a business sense. One man is on a ladder watering a plant that is growing from coins.",
+         #This style argument centers the picture on the page  
+         style = "display: block; margin-left: auto; margin-right: auto;"  
     )
   })
   
